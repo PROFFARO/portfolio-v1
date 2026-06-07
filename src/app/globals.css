@@ -1,0 +1,247 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --neon-green: #00ff88;
+  --neon-blue: #00d4ff;
+  --neon-purple: #7b2fff;
+  --bg: #05050a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg);
+  color: #e2e8f0;
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* hide native cursor only on devices with a fine pointer */
+@media (hover: none) {
+  body {
+    cursor: auto;
+  }
+}
+
+/* ---------- Scrollbar ---------- */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #07070d;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--neon-green), var(--neon-blue));
+  border-radius: 8px;
+}
+::selection {
+  background: rgba(0, 255, 136, 0.25);
+  color: #fff;
+}
+
+/* ---------- Layered background ---------- */
+.bg-grid {
+  background-image: linear-gradient(rgba(0, 212, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
+
+.bg-radial-fade {
+  background: radial-gradient(circle at 50% 0%, rgba(123, 47, 255, 0.12), transparent 55%),
+    radial-gradient(circle at 80% 90%, rgba(0, 212, 255, 0.1), transparent 50%);
+}
+
+/* ---------- Scanlines ---------- */
+.scanlines::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.25) 3px,
+    transparent 4px
+  );
+  z-index: 60;
+  opacity: 0.35;
+  mix-blend-mode: overlay;
+}
+
+/* ---------- Glitch ---------- */
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  overflow: hidden;
+}
+.glitch::before {
+  color: var(--neon-blue);
+  animation: glitch-top 2.5s infinite linear alternate-reverse;
+}
+.glitch::after {
+  color: var(--neon-purple);
+  animation: glitch-bottom 2s infinite linear alternate-reverse;
+}
+@keyframes glitch-top {
+  0%, 100% { clip-path: inset(0 0 100% 0); transform: translate(0); }
+  5% { clip-path: inset(0 0 60% 0); transform: translate(-3px, -2px); }
+  10% { clip-path: inset(0 0 85% 0); transform: translate(3px, 2px); }
+  15% { clip-path: inset(0 0 40% 0); transform: translate(-3px, 1px); }
+  20% { clip-path: inset(0 0 90% 0); transform: translate(0); }
+}
+@keyframes glitch-bottom {
+  0%, 100% { clip-path: inset(100% 0 0 0); transform: translate(0); }
+  5% { clip-path: inset(60% 0 0 0); transform: translate(3px, 2px); }
+  10% { clip-path: inset(40% 0 0 0); transform: translate(-3px, -2px); }
+  15% { clip-path: inset(70% 0 0 0); transform: translate(3px, -1px); }
+  20% { clip-path: inset(30% 0 0 0); transform: translate(0); }
+}
+
+/* ---------- Text effects ---------- */
+.text-glow {
+  text-shadow: 0 0 8px rgba(0, 255, 136, 0.7), 0 0 20px rgba(0, 255, 136, 0.3);
+}
+.text-glow-blue {
+  text-shadow: 0 0 8px rgba(0, 212, 255, 0.7), 0 0 20px rgba(0, 212, 255, 0.3);
+}
+.gradient-text {
+  background: linear-gradient(90deg, var(--neon-green), var(--neon-blue), var(--neon-purple), var(--neon-green));
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-shift 6s ease infinite;
+}
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ---------- Glass / holo cards ---------- */
+.glass {
+  background: rgba(13, 13, 22, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.holo {
+  position: relative;
+  overflow: hidden;
+}
+.holo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 30%,
+    rgba(0, 255, 136, 0.12) 45%,
+    rgba(0, 212, 255, 0.12) 55%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.7s ease;
+  pointer-events: none;
+}
+.holo:hover::after {
+  transform: translateX(100%);
+}
+
+/* ---------- Animated border ---------- */
+.border-draw {
+  position: relative;
+}
+.border-draw::before,
+.border-draw::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  pointer-events: none;
+}
+.border-draw::before {
+  border-top-color: var(--neon-green);
+  border-right-color: var(--neon-green);
+  transition: width 0.2s ease 0.2s, height 0.2s ease;
+  width: 0;
+  height: 0;
+}
+.border-draw::after {
+  border-bottom-color: var(--neon-green);
+  border-left-color: var(--neon-green);
+  transition: width 0.2s ease 0.2s, height 0.2s ease;
+  width: 0;
+  height: 0;
+}
+.border-draw:hover::before,
+.border-draw:hover::after {
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- Custom cursor ---------- */
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+}
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--neon-green);
+}
+.cursor-ring {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--neon-green);
+  transition: width 0.2s, height 0.2s, background 0.2s, border-color 0.2s;
+}
+.cursor-ring.hovered {
+  width: 56px;
+  height: 56px;
+  background: rgba(0, 255, 136, 0.12);
+  border-color: var(--neon-blue);
+}
+
+/* ---------- Utility ---------- */
+.tag {
+  @apply text-[10px] sm:text-xs px-2 py-0.5 rounded border border-neon-green/30 text-neon-green/90 bg-neon-green/5;
+}
+.section-label {
+  @apply font-mono text-neon-green/80 text-sm tracking-widest uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
