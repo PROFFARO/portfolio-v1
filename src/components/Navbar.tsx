@@ -41,6 +41,21 @@ export default function Navbar() {
     };
   }, []);
 
+  // Lock body scroll + close on Escape while the mobile menu is open.
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
   const go = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     setOpen(false);
@@ -88,26 +103,17 @@ export default function Navbar() {
         </ul>
 
         <button
-          onClick={() => setOpen((o) => !o)}
-          className="relative z-50 flex h-8 w-8 flex-col items-center justify-center gap-1.5 md:hidden"
-          aria-label="Toggle menu"
+          onClick={() => setOpen(true)}
+          className={`relative z-50 flex h-8 w-8 flex-col items-center justify-center gap-1.5 md:hidden ${
+            open ? "pointer-events-none opacity-0" : "opacity-100"
+          } transition-opacity duration-200`}
+          aria-label="Open menu"
+          aria-expanded={open}
           data-cursor="hover"
         >
-          <span
-            className={`h-0.5 w-6 bg-neon-green transition-all duration-300 ${
-              open ? "translate-y-2 rotate-45" : ""
-            }`}
-          />
-          <span
-            className={`h-0.5 w-6 bg-neon-green transition-all duration-300 ${
-              open ? "opacity-0" : ""
-            }`}
-          />
-          <span
-            className={`h-0.5 w-6 bg-neon-green transition-all duration-300 ${
-              open ? "-translate-y-2 -rotate-45" : ""
-            }`}
-          />
+          <span className="h-0.5 w-6 bg-neon-green" />
+          <span className="h-0.5 w-6 bg-neon-green" />
+          <span className="h-0.5 w-6 bg-neon-green" />
         </button>
       </nav>
 
@@ -117,6 +123,27 @@ export default function Navbar() {
           open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
+        {/* Dedicated close button */}
+        <button
+          onClick={() => setOpen(false)}
+          aria-label="Close menu"
+          data-cursor="hover"
+          className="absolute right-5 top-5 grid h-11 w-11 place-items-center rounded-full border border-neon-green/40 bg-neon-green/5 text-neon-green transition-all hover:rotate-90 hover:border-neon-green hover:shadow-neon-green"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+          >
+            <line x1="6" y1="6" x2="18" y2="18" />
+            <line x1="18" y1="6" x2="6" y2="18" />
+          </svg>
+        </button>
+
         {SECTIONS.map((s, i) => (
           <button
             key={s.id}
