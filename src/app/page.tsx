@@ -15,7 +15,7 @@ export default async function Home() {
   const data = await getSiteData();
 
   return (
-    <ClientShell>
+    <ClientShell data={data}>
       <Hero github={data.github} totalStars={data.totalStars} />
       <About github={data.github} />
       <Skills languages={data.languages} />

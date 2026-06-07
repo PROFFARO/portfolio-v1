@@ -7,8 +7,16 @@ import Navbar from "./Navbar";
 import MatrixRain from "./MatrixRain";
 import EasterEggs from "./EasterEggs";
 import SocialLinks from "./SocialLinks";
+import Terminal from "./Terminal";
+import type { SiteData } from "@/data/profile";
 
-export default function ClientShell({ children }: { children: ReactNode }) {
+export default function ClientShell({
+  children,
+  data,
+}: {
+  children: ReactNode;
+  data: SiteData;
+}) {
   const [booted, setBooted] = useState(false);
 
   // lock scroll during boot
@@ -21,6 +29,7 @@ export default function ClientShell({ children }: { children: ReactNode }) {
       {!booted && <Preloader onDone={() => setBooted(true)} />}
       <CustomCursor />
       <EasterEggs />
+      {booted && <Terminal data={data} />}
 
       <div className="pointer-events-none fixed inset-0 z-0">
         <div className="bg-grid absolute inset-0 opacity-30" />
