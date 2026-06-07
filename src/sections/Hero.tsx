@@ -90,9 +90,6 @@ export default function Hero({
         </div>
       </div>
 
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce font-mono text-xs text-muted">
-        ↓ scroll
-      </div>
     </section>
   );
 }

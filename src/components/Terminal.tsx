@@ -570,10 +570,10 @@ export default function Terminal({ data }: { data: SiteData }) {
     }
   }, [open]);
 
-  // Global shortcuts: Ctrl+` / Ctrl+K toggle, Esc closes.
+  // Global shortcut: Ctrl+` toggles. Esc closes. (Ctrl+K is reserved for the command palette.)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.ctrlKey && (e.key === "`" || e.key.toLowerCase() === "k")) {
+      if (e.ctrlKey && e.key === "`") {
         e.preventDefault();
         setOpen((o) => !o);
       } else if (e.key === "Escape" && open) {
@@ -583,6 +583,13 @@ export default function Terminal({ data }: { data: SiteData }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
+
+  // Allow other components (e.g. the command palette) to open the terminal.
+  useEffect(() => {
+    const onOpen = () => setOpen(true);
+    window.addEventListener("open-terminal", onOpen);
+    return () => window.removeEventListener("open-terminal", onOpen);
+  }, []);
 
   const runCommand = useCallback(
     (raw: string) => {

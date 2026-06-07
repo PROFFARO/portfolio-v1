@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { type Project } from "@/data/profile";
 import SectionHeading from "@/components/SectionHeading";
 import Reveal from "@/components/Reveal";
@@ -97,6 +98,30 @@ function ProjectCard({ p }: { p: Project }) {
 }
 
 export default function Projects({ projects }: { projects: Project[] }) {
+  const [query, setQuery] = useState("");
+  const [activeLang, setActiveLang] = useState("All");
+
+  const languages = useMemo(() => {
+    const set = new Set(projects.map((p) => p.language).filter(Boolean));
+    return ["All", ...Array.from(set)];
+  }, [projects]);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return projects.filter((p) => {
+      if (activeLang !== "All" && p.language !== activeLang) return false;
+      if (!q) return true;
+      return `${p.display} ${p.description} ${p.language} ${p.tags.join(" ")}`
+        .toLowerCase()
+        .includes(q);
+    });
+  }, [projects, query, activeLang]);
+
+  const reset = () => {
+    setQuery("");
+    setActiveLang("All");
+  };
+
   return (
     <section id="projects" className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6">
       <SectionHeading
@@ -106,13 +131,81 @@ export default function Projects({ projects }: { projects: Project[] }) {
         // subtitle="// live repositories pulled from github.com/proffaro — hover to access"
       />
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {projects.map((p, i) => (
-          <Reveal key={p.name} variant="up" delay={(i % 3) * 100}>
-            <ProjectCard p={p} />
-          </Reveal>
-        ))}
-      </div>
+      {/* filter / search bar */}
+      <Reveal variant="up" className="mb-8">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-4 py-2.5 transition-colors focus-within:border-neon-green/50">
+            <span className="font-mono text-sm text-neon-green">{">"}</span>
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              spellCheck={false}
+              autoComplete="off"
+              aria-label="Search projects"
+              placeholder="search projects by name, tag, or language…"
+              className="flex-1 bg-transparent font-mono text-sm text-ink caret-neon-green outline-none placeholder:text-muted/60"
+              data-cursor="hover"
+            />
+            {(query || activeLang !== "All") && (
+              <button
+                onClick={reset}
+                aria-label="Clear filters"
+                data-cursor="hover"
+                className="font-mono text-[11px] text-muted transition-colors hover:text-neon-green"
+              >
+                clear ✕
+              </button>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {languages.map((lang) => {
+              const isActive = activeLang === lang;
+              return (
+                <button
+                  key={lang}
+                  onClick={() => setActiveLang(lang)}
+                  data-cursor="hover"
+                  className={`rounded border px-2.5 py-1 font-mono text-[11px] transition-all duration-300 hover:-translate-y-0.5 ${
+                    isActive
+                      ? "border-neon-green/50 bg-neon-green/5 text-neon-green shadow-neon-green/20"
+                      : "border-white/10 bg-white/[0.03] text-muted hover:border-neon-green/50 hover:text-neon-green"
+                  }`}
+                >
+                  {lang}
+                </button>
+              );
+            })}
+            <span className="ml-auto font-mono text-[11px] text-muted">
+              {filtered.length} / {projects.length} repos
+            </span>
+          </div>
+        </div>
+      </Reveal>
+
+      {filtered.length === 0 ? (
+        <div className="flex flex-col items-center gap-3 py-16 text-center">
+          <p className="font-mono text-sm text-muted">
+            no repos match{query ? ` "${query}"` : " that filter"} — try clearing
+            filters
+          </p>
+          <button
+            onClick={reset}
+            data-cursor="hover"
+            className="rounded-md border border-neon-green/50 bg-neon-green/10 px-4 py-2 font-mono text-xs text-neon-green transition-all hover:-translate-y-0.5 hover:shadow-neon-green"
+          >
+            clear filters
+          </button>
+        </div>
+      ) : (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((p, i) => (
+            <Reveal key={p.name} variant="up" delay={(i % 3) * 100}>
+              <ProjectCard p={p} />
+            </Reveal>
+          ))}
+        </div>
+      )}
 
       <Reveal className="mt-12 text-center">
         <a
